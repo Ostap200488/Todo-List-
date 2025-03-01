@@ -1,3 +1,6 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Main {
@@ -106,52 +109,40 @@ public class Main {
     private static void addTask(User user) {
         System.out.print("Enter task description: ");
         String description = scanner.nextLine().trim();
-        user.getTaskList().addTask(description);
+
+        System.out.print("Enter due date (YYYY-MM-DD): ");
+        LocalDate dueDate;
+        while (true) {
+            try {
+                dueDate = LocalDate.parse(scanner.nextLine().trim(), DateTimeFormatter.ISO_LOCAL_DATE);
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.print("Invalid date format. Please enter again (YYYY-MM-DD): ");
+            }
+        }
+
+        System.out.print("Enter task priority (High, Medium, Low): ");
+        String priority = scanner.nextLine().trim();
+
+        user.getTaskList().addTask(description, dueDate, priority);
         System.out.println("Task added successfully.");
     }
 
     private static void markTaskAsCompleted(User user) {
-        if (user.getTaskList().isEmpty()) {
-            System.out.println("No tasks available.");
-            return;
-        }
-
-        System.out.println("Enter task description to mark as completed:");
-        viewTasks(user);
-
-        System.out.print("Task description: ");
+        System.out.print("Enter task description to mark as completed: ");
         String description = scanner.nextLine().trim();
         boolean success = user.getTaskList().markTaskAsCompleted(description);
-        
-        if (success) {
-            System.out.println("Task marked as completed.");
-        } else {
-            System.out.println("Task not found.");
-        }
+        System.out.println(success ? "Task marked as completed." : "Task not found.");
     }
 
     private static void removeTask(User user) {
-        if (user.getTaskList().isEmpty()) {
-            System.out.println("No tasks available.");
-            return;
-        }
-
-        System.out.println("Enter task description to remove:");
-        viewTasks(user);
-
-        System.out.print("Task description: ");
+        System.out.print("Enter task description to remove: ");
         String description = scanner.nextLine().trim();
         boolean success = user.getTaskList().removeTask(description);
-        
-        if (success) {
-            System.out.println("Task removed successfully.");
-        } else {
-            System.out.println("Task not found.");
-        }
+        System.out.println(success ? "Task removed successfully." : "Task not found.");
     }
 
     private static void viewTasks(User user) {
-        System.out.println("\nTasks for " + user.getName() + ":");
         user.getTaskList().displayTasks();
     }
 
